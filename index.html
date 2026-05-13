@@ -1,439 +1,554 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para Ti</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para ti</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <style>
-        /* === 1. Base Setup & Variables === */
-        :root {
-            --bg-color: #050508;
-            --text-primary: #fdf8f5;
-            --text-secondary: rgba(253, 248, 245, 0.7);
-            --font-serif: 'Cormorant Garamond', serif;
-            --font-sans: 'Inter', sans-serif;
-            --glow-blue: rgba(45, 33, 102, 0.6);
-            --glow-amber: rgba(180, 100, 30, 0.2);
-            --card-bg: rgba(15, 15, 20, 0.4);
-            --card-border: rgba(255, 255, 255, 0.08);
-        }
+    :root {
+      --deep-navy:   #07090f;
+      --midnight:    #0d1220;
+      --indigo-deep: #141830;
+      --violet-soft: #1e1a3a;
+      --amber-glow:  rgba(255, 185, 80, 0.12);
+      --amber-warm:  rgba(255, 200, 110, 0.22);
+      --blue-glow:   rgba(90, 120, 220, 0.18);
+      --card-bg:     rgba(18, 22, 40, 0.55);
+      --card-border: rgba(180, 160, 255, 0.14);
+      --text-main:   #e8e0d4;
+      --text-dim:    rgba(232, 224, 212, 0.55);
+      --btn-text:    rgba(232, 224, 212, 0.9);
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--deep-navy);
+      overflow: hidden;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: var(--text-main);
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            font-family: var(--font-serif);
-            overflow: hidden; /* Prevent scrolling, true single page */
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    /* ─── CANVAS LAYER ─── */
+    #bg-canvas {
+      position: fixed; inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-        /* === 2. Background Layers (Cinematic Ambient) === */
-        #ambient-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-            overflow: hidden;
-        }
+    /* ─── VIGNETTE ─── */
+    .vignette {
+      position: fixed; inset: 0; z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 70% 70% at 50% 50%,
+        transparent 40%,
+        rgba(4, 6, 14, 0.72) 100%
+      );
+    }
 
-        .gradient-base {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% 50%, #0a0a14 0%, #030305 100%);
-        }
+    /* ─── WARM EDGE GLOW ─── */
+    .edge-glow {
+      position: fixed; inset: 0; z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 40% 60% at 0%   60%, rgba(255,165,60,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 100% 40%, rgba(255,165,60,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 30% at 50%  0%,  rgba(90,100,200,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 30% at 50%  100%,rgba(90,100,200,0.07) 0%, transparent 70%);
+      animation: edgePulse 6s ease-in-out infinite alternate;
+    }
+    @keyframes edgePulse {
+      0%   { opacity: 0.7; }
+      100% { opacity: 1.0; }
+    }
 
-        /* Floating Orbs */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.5;
-            animation: floatOrb 25s infinite alternate ease-in-out;
-        }
-        .orb-1 {
-            width: 40vw;
-            height: 40vw;
-            background: var(--glow-blue);
-            top: -10%;
-            left: -10%;
-            animation-duration: 30s;
-        }
-        .orb-2 {
-            width: 35vw;
-            height: 35vw;
-            background: rgba(70, 30, 100, 0.4);
-            bottom: -10%;
-            right: -10%;
-            animation-duration: 28s;
-            animation-delay: -5s;
-        }
-        .orb-3 {
-            width: 30vw;
-            height: 30vw;
-            background: var(--glow-amber);
-            top: 40%;
-            left: 40%;
-            animation-duration: 35s;
-            animation-delay: -10s;
-        }
+    /* ─── STAGE ─── */
+    #stage {
+      position: fixed; inset: 0;
+      z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
 
-        /* Particles */
-        .particle {
-            position: absolute;
-            background: #fff;
-            border-radius: 50%;
-            opacity: 0;
-            animation: rise 15s infinite linear;
-        }
+    /* ─── SCENE ─── */
+    .scene {
+      display: none;
+      width: 100%; max-width: 720px;
+      opacity: 0;
+      transform: scale(0.98);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scene.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .scene.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
 
-        /* Warm Glow (Candle effect) */
-        .warm-glow {
-            position: absolute;
-            width: 20vw;
-            height: 100vh;
-            top: 0;
-            filter: blur(120px);
-            opacity: 0.3;
-            animation: pulseGlow 8s infinite alternate ease-in-out;
-        }
-        .warm-glow.left { left: -10vw; background: radial-gradient(ellipse, rgba(200, 120, 40, 0.4) 0%, transparent 70%); }
-        .warm-glow.right { right: -10vw; background: radial-gradient(ellipse, rgba(200, 120, 40, 0.4) 0%, transparent 70%); animation-delay: -4s;}
+    /* ─── GLASS CARD ─── */
+    .card {
+      width: 100%;
+      background: var(--card-bg);
+      backdrop-filter: blur(28px) saturate(1.4);
+      -webkit-backdrop-filter: blur(28px) saturate(1.4);
+      border-radius: 32px;
+      padding: 72px 80px;
+      position: relative;
+      /* gradient glow border */
+      border: 1px solid transparent;
+      background-clip: padding-box;
+      box-shadow:
+        0 0 0 1px rgba(160, 140, 255, 0.13),
+        0 0 60px rgba(90, 80, 200, 0.14),
+        0 0 120px rgba(255, 170, 60, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        inset 0 0 40px rgba(255, 180, 80, 0.04);
+    }
+    /* glow ring pseudo */
+    .card::before {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: 33px;
+      background: linear-gradient(
+        135deg,
+        rgba(140, 120, 255, 0.25) 0%,
+        rgba(100, 80, 200, 0.10) 30%,
+        rgba(255, 180, 70, 0.15) 70%,
+        rgba(140, 120, 255, 0.20) 100%
+      );
+      z-index: -1;
+    }
 
-        /* Vignette */
-        .vignette {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.9);
-            pointer-events: none;
-        }
+    /* ─── SCENE NUMBER ─── */
+    .scene-num {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 36px;
+    }
 
-        /* === 3. UI Element: Glass Card === */
-        main {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+    /* ─── TEXT LINES ─── */
+    .text-body {
+      font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--text-main);
+      max-width: 600px;
+      text-align: center;
+      margin: 0 auto;
+    }
+    .text-body .line {
+      display: block;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .text-body .line.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* italic for first line of scene 1 */
+    .scene-intro {
+      font-style: italic;
+      font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+      color: rgba(232, 224, 212, 0.9);
+    }
 
-        .scene {
-            position: absolute;
-            display: none; /* Handled by JS */
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-        }
+    /* ─── DECORATIVE DIVIDER ─── */
+    .divider {
+      width: 48px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200,180,255,0.4), transparent);
+      margin: 28px auto;
+      opacity: 0;
+      transition: opacity 0.5s ease 0.3s;
+    }
+    .visible .divider { opacity: 1; }
 
-        .scene.active {
-            display: flex;
-            opacity: 1;
-        }
+    /* ─── BUTTON ─── */
+    .btn-wrap {
+      margin-top: 52px;
+      display: flex; justify-content: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .btn-wrap.show { opacity: 1; transform: translateY(0); }
 
-        .glass-card {
-            width: 100%;
-            max-width: 700px;
-            min-height: 70vh;
-            background: var(--card-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 32px;
-            padding: 80px 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            
-            /* Gradient glowing border simulation */
-            box-shadow: 
-                0 20px 50px rgba(0,0,0,0.5),
-                0 0 40px rgba(100, 80, 200, 0.1) outer,
-                inset 0 0 20px rgba(255, 200, 100, 0.05);
-            
-            border: 1px solid transparent;
-            background-clip: padding-box;
-        }
+    .btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--btn-text);
+      background: transparent;
+      border: 1px solid rgba(180, 160, 255, 0.25);
+      border-radius: 100px;
+      padding: 14px 44px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    .btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 120% 120% at 50% 50%, rgba(180,150,255,0.08), transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(130,110,220,0.22), 0 0 0 1px rgba(200,180,255,0.2);
+      border-color: rgba(200, 180, 255, 0.42);
+    }
+    .btn:hover::before { opacity: 1; }
+    .btn:active { transform: translateY(-1px); }
 
-        .glass-card::before {
-            content: "";
-            position: absolute;
-            top: 0; right: 0; bottom: 0; left: 0;
-            z-index: -1;
-            margin: -1px;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.05) 100%);
-        }
+    /* ─── CTA FINAL BUTTON ─── */
+    .btn-cta {
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      padding: 18px 56px;
+      border-color: rgba(255, 185, 100, 0.35);
+      color: rgba(255, 215, 150, 0.9);
+      box-shadow: 0 0 30px rgba(255,170,60,0.08);
+    }
+    .btn-cta:hover {
+      box-shadow: 0 8px 40px rgba(255,160,60,0.2), 0 0 0 1px rgba(255,200,120,0.3);
+      border-color: rgba(255, 200, 120, 0.55);
+    }
 
-        /* Micro-zoom transition for cards */
-        .scene.active .glass-card {
-            animation: microZoom 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
+    /* ─── PROGRESS DOTS ─── */
+    #progress {
+      position: fixed;
+      bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex; gap: 8px; align-items: center;
+      opacity: 0.5;
+      transition: opacity 0.4s ease;
+    }
+    #progress:hover { opacity: 0.85; }
+    .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(200,180,255,0.3);
+      transition: background 0.4s ease, transform 0.4s ease;
+    }
+    .dot.active {
+      background: rgba(200,180,255,0.85);
+      transform: scale(1.3);
+    }
 
-        /* === 4. Typography & Content === */
-        p {
-            font-size: 1.6rem;
-            line-height: 1.8;
-            color: var(--text-primary);
-            margin-bottom: 2rem;
-            opacity: 0;
-            transform: translateY(15px);
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        /* Line by line reveal */
-        .scene.active p {
-            animation: textReveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-        
-        /* Delays for multiple paragraphs */
-        .scene.active p:nth-child(1) { animation-delay: 0.3s; }
-        .scene.active p:nth-child(2) { animation-delay: 1.5s; }
-        .scene.active p:nth-child(3) { animation-delay: 2.7s; }
-
-        /* === 5. Buttons === */
-        button, .final-cta {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--text-secondary);
-            font-family: var(--font-sans);
-            font-size: 0.85rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            padding: 14px 32px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            opacity: 0;
-            margin-top: auto;
-        }
-
-        .scene.active button, .scene.active .final-cta {
-            animation: textReveal 1s ease forwards;
-            animation-delay: 2s; /* Appears after text */
-        }
-
-        /* Slower reveal for final scene */
-        #scene-6.active p { animation-duration: 2s; animation-delay: 0.5s;}
-        #scene-6.active .final-cta { animation-delay: 3.5s; border-color: rgba(255, 255, 255, 0.4); color: var(--text-primary); }
-
-        button:hover, .final-cta:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.5);
-            color: #fff;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 255, 255, 0.1);
-        }
-
-        /* Reset link styling for CTA */
-        a.final-cta {
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        /* === 6. Animations === */
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(5%, 5%) scale(1.1); }
-        }
-
-        @keyframes pulseGlow {
-            0% { opacity: 0.2; }
-            100% { opacity: 0.4; }
-        }
-
-        @keyframes rise {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.6; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-        }
-
-        @keyframes textReveal {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes microZoom {
-            from { transform: scale(0.96); }
-            to { transform: scale(1); }
-        }
-
-        /* === 7. Mobile Adjustments === */
-        @media (max-width: 768px) {
-            .glass-card {
-                padding: 50px 30px;
-                min-height: 75vh;
-            }
-            p { font-size: 1.3rem; }
-        }
-    </style>
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .card { padding: 44px 32px; border-radius: 24px; }
+      .btn-wrap { margin-top: 36px; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Cinematic Background -->
-    <div id="ambient-bg">
-        <div class="gradient-base"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div id="particles-container"></div>
-        <div class="warm-glow left"></div>
-        <div class="warm-glow right"></div>
-        <div class="vignette"></div>
-    </div>
+<!-- Background canvas -->
+<canvas id="bg-canvas"></canvas>
+<div class="vignette"></div>
+<div class="edge-glow"></div>
 
-    <!-- Scenes Container -->
-    <main>
-        <!-- Scene 1 -->
-        <div class="scene active" id="scene-1">
-            <div class="glass-card">
-                <p>Hay momentos en la vida en los que las palabras en un chat se quedan cortas.</p>
-                <p>Hoy sentí que era el momento de detenerme y decirte las cosas como realmente son, sin prisas, en un espacio dedicado solo para ti.</p>
-                <p>No es solo un mensaje, es mi forma de mostrarte que lo que siento tiene un lugar sólido en mi mundo.</p>
-                <button onclick="nextScene(2)">Continuar</button>
-            </div>
+<!-- Progress dots -->
+<div id="progress"></div>
+
+<!-- Stage -->
+<div id="stage"></div>
+
+<script>
+// ─── SCENE DATA ────────────────────────────────────────────────
+const scenes = [
+  {
+    num: "I",
+    lines: [
+      { text: "Hay momentos en la vida en los que las palabras en un chat se quedan cortas.", cls: "scene-intro" },
+      { text: "Hoy sentí que era el momento de detenerme y decirte las cosas como realmente son, sin prisas, en un espacio dedicado solo para ti." },
+      { text: "No es solo un mensaje — es mi forma de mostrarte que lo que siento tiene un lugar sólido en mi mundo." }
+    ],
+    btn: "continuar"
+  },
+  {
+    num: "II",
+    lines: [
+      { text: "Cuando te miro, no solo veo a una mujer increíblemente hermosa." },
+      { text: "Veo tu timidez, esa que intentas ocultar a veces, pero que para mí es el reflejo de la nobleza de tu alma." },
+      { text: "Veo la pureza en tus ojos, esa luz que parece intacta a pesar de todo." }
+    ],
+    btn: "continuar"
+  },
+  {
+    num: "III",
+    lines: [
+      { text: "Adoro cómo te ríes cuando te da vergüenza, y cómo, poco a poco, has dejado que yo vea quién eres de verdad." },
+      { text: "Tienes una elegancia natural que nace de tu bondad, y eso es lo que más admiro de ti." }
+    ],
+    btn: "continuar"
+  },
+  {
+    num: "IV",
+    lines: [
+      { text: "Sé que a veces te exiges demasiado, que temes no ser \"perfecta\" o que tus cicatrices del pasado puedan asustarme." },
+      { text: "Pero escucha bien: tus heridas no me alejan — me hacen respetarte más por la fuerza que tienes." },
+      { text: "No necesitas ser perfecta para ser valorada. Para mí, ya eres suficiente." }
+    ],
+    btn: "continuar"
+  },
+  {
+    num: "V",
+    lines: [
+      { text: "Quiero ser el hombre que te dé la paz y la seguridad que siempre mereciste." },
+      { text: "El lugar donde puedas bajar la guardia y simplemente ser tú misma." }
+    ],
+    btn: "continuar"
+  },
+  {
+    num: "VI",
+    lines: [
+      { text: "Hoy hablamos de cosas profundas, de sueños que quizás antes veías lejanos, como la idea de tener una familia." },
+      { text: "Escuchar eso de ti me hizo entender que somos más que dos personas que se gustan — somos un equipo." }
+    ],
+    btn: "continuar"
+  },
+  {
+    num: "VII",
+    lines: [
+      { text: "Quiero que seas mi mejor amiga, mi cómplice en todo lo que venga, la persona con la que pueda hablar de mis metas y compartir mis miedos." },
+      { text: "Juntos podemos construir algo que nadie pueda romper." }
+    ],
+    btn: "continuar"
+  },
+  {
+    num: "VIII",
+    lines: [
+      { text: "Te amo con una fuerza que me motiva a ser mejor cada día.", cls: "scene-intro" },
+      { text: "No quiero que esto sea solo una etapa. Quiero que sea nuestra historia." },
+      { text: "Hay algo más que quiero decirte, pero prefiero hacerlo escuchando tu voz…" }
+    ],
+    btn: "quiero escuchar tu voz",
+    isFinal: true
+  }
+];
+
+// ─── BUILD SCENES ───────────────────────────────────────────────
+const stage = document.getElementById('stage');
+const progressEl = document.getElementById('progress');
+let currentIndex = 0;
+let canAdvance = false;
+
+function buildScenes() {
+  scenes.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'scene';
+    el.id = `scene-${i}`;
+
+    let linesHTML = s.lines.map((l, li) =>
+      `<span class="line ${l.cls || ''}" style="transition-delay:${(li * 0.18) + 0.1}s">${l.text}</span>`
+    ).join('\n');
+
+    el.innerHTML = `
+      <div class="card">
+        <p class="scene-num">— ${s.num} —</p>
+        <div class="text-body">${linesHTML}</div>
+        <div class="divider"></div>
+        <div class="btn-wrap">
+          <button class="btn ${s.isFinal ? 'btn-cta' : ''}" onclick="advance()">${s.btn}</button>
         </div>
+      </div>`;
+    stage.appendChild(el);
 
-        <!-- Scene 2 -->
-        <div class="scene" id="scene-2">
-            <div class="glass-card">
-                <p>Cuando te miro, no solo veo a una mujer increíblemente hermosa.</p>
-                <p>Veo tu timidez, esa que intentas ocultar a veces, pero que para mí es el reflejo de la nobleza de tu alma.</p>
-                <p>Veo la pureza en tus ojos, esa luz que parece intacta a pesar de todo. Adoro cómo te ríes cuando te da vergüenza y cómo, poco a poco, has dejado que yo vea quién eres de verdad.</p>
-                <button onclick="nextScene(3)">Continuar</button>
-            </div>
-        </div>
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.id = `dot-${i}`;
+    progressEl.appendChild(dot);
+  });
+}
 
-        <!-- Scene 3 -->
-        <div class="scene" id="scene-3">
-            <div class="glass-card">
-                <p>Tienes una elegancia natural que nace de tu bondad, y eso es lo que más admiro de ti.</p>
-                <p>Sé que a veces te exiges demasiado, que temes no ser "perfecta" o que tus cicatrices del pasado puedan asustarme.</p>
-                <p>Pero escucha bien: tus heridas no me alejan, me hacen respetarte más por la fuerza que tienes. No necesitas ser perfecta para ser valorada; para mí, ya eres suficiente.</p>
-                <button onclick="nextScene(4)">Continuar</button>
-            </div>
-        </div>
+// ─── SHOW SCENE ─────────────────────────────────────────────────
+function showScene(idx, direction = 1) {
+  canAdvance = false;
 
-        <!-- Scene 4 -->
-        <div class="scene" id="scene-4">
-            <div class="glass-card">
-                <p>Quiero ser el hombre que te dé la paz y la seguridad que siempre mereciste.</p>
-                <p>El lugar donde puedas bajar la guardia y, simplemente, ser tú misma.</p>
-                <button onclick="nextScene(5)">Continuar</button>
-            </div>
-        </div>
+  // hide old
+  const old = document.querySelector('.scene.active');
+  if (old) {
+    old.style.opacity = '0';
+    old.style.transform = 'scale(0.97)';
+    setTimeout(() => {
+      old.classList.remove('active', 'visible');
+      old.querySelectorAll('.line').forEach(l => l.classList.remove('revealed'));
+      old.querySelector('.btn-wrap').classList.remove('show');
+    }, 500);
+  }
 
-        <!-- Scene 5 -->
-        <div class="scene" id="scene-5">
-            <div class="glass-card">
-                <p>Hoy hablamos de cosas profundas, de sueños que quizás antes veías lejanos, como la idea de tener una familia.</p>
-                <p>Escuchar eso de ti me hizo entender que somos más que dos personas que se gustan; somos un equipo.</p>
-                <p>Quiero que seas mi mejor amiga, mi cómplice en todo lo que venga. Juntos podemos construir algo que nadie pueda romper.</p>
-                <button onclick="nextScene(6)">Continuar</button>
-            </div>
-        </div>
+  // update dots
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
 
-        <!-- Scene 6 (Final) -->
-        <div class="scene" id="scene-6">
-            <div class="glass-card">
-                <p>Te amo con una fuerza que me motiva a ser mejor cada día.</p>
-                <p>No quiero que esto sea solo una etapa, quiero que sea nuestra historia.</p>
-                <p>Hay algo más que quiero decirte, pero prefiero hacerlo escuchando tu voz...</p>
-                
-                <!-- Action CTA: triggers a phone call intent -->
-                <a href="tel:+1234567890" class="final-cta">Quiero escuchar tu voz</a>
-            </div>
-        </div>
-    </main>
+  setTimeout(() => {
+    const el = document.getElementById(`scene-${idx}`);
+    el.classList.add('active');
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.98)';
 
-    <script>
-        // === Scene Transition Logic ===
-        function nextScene(nextIndex) {
-            const currentScene = document.querySelector('.scene.active');
-            const nextSceneElement = document.getElementById(`scene-${nextIndex}`);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.classList.add('visible');
+        el.style.opacity = '';
+        el.style.transform = '';
 
-            if (!currentScene || !nextSceneElement) return;
+        // reveal lines
+        const lines = el.querySelectorAll('.line');
+        lines.forEach((line, i) => {
+          setTimeout(() => line.classList.add('revealed'), 120 + i * 200);
+        });
 
-            // Fade out current
-            currentScene.style.opacity = '0';
-            
-            setTimeout(() => {
-                currentScene.classList.remove('active');
-                currentScene.style.display = 'none';
+        // show button after lines
+        const totalDelay = 120 + lines.length * 200 + 400;
+        setTimeout(() => {
+          el.querySelector('.btn-wrap').classList.add('show');
+          canAdvance = true;
+        }, totalDelay);
+      });
+    });
+  }, old ? 550 : 0);
+}
 
-                // Prepare next scene
-                nextSceneElement.style.display = 'flex';
-                
-                // Trigger reflow to restart CSS animations
-                void nextSceneElement.offsetWidth; 
+// ─── ADVANCE ────────────────────────────────────────────────────
+function advance() {
+  if (!canAdvance) return;
 
-                // Fade in next
-                nextSceneElement.classList.add('active');
-            }, 800); // Wait for CSS transition (0.8s) to finish
-        }
+  if (currentIndex < scenes.length - 1) {
+    currentIndex++;
+    showScene(currentIndex);
+  } else {
+    // final action — replace button text
+    const btn = document.querySelector(`#scene-${currentIndex} .btn`);
+    btn.textContent = '💫';
+    btn.style.pointerEvents = 'none';
+    setTimeout(() => {
+      btn.textContent = 'te amo ✦';
+      btn.style.pointerEvents = 'none';
+    }, 800);
+  }
+}
 
-        // === Ambient Particles Generator ===
-        function createParticles() {
-            const container = document.getElementById('particles-container');
-            const particleCount = 40;
+// ─── CANVAS BACKGROUND ──────────────────────────────────────────
+(function initCanvas() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
 
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                // Randomize properties for organic feel
-                const size = Math.random() * 3 + 1; // 1px to 4px
-                const posX = Math.random() * 100; // 0% to 100% vw
-                const delay = Math.random() * 15; // 0s to 15s delay
-                const duration = Math.random() * 10 + 15; // 15s to 25s duration
-                const opacity = Math.random() * 0.5 + 0.1; // 0.1 to 0.6 max opacity
+  let W, H;
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
 
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${posX}vw`;
-                particle.style.animationDelay = `${delay}s`;
-                particle.style.animationDuration = `${duration}s`;
-                particle.style.opacity = opacity;
+  // ─── GRADIENT BASE ───
+  function drawGradient() {
+    const g = ctx.createRadialGradient(W*0.5, H*0.45, 0, W*0.5, H*0.5, Math.max(W,H)*0.8);
+    g.addColorStop(0,   '#111628');
+    g.addColorStop(0.4, '#0d1220');
+    g.addColorStop(0.7, '#0a0d1a');
+    g.addColorStop(1,   '#07090f');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+  }
 
-                container.appendChild(particle);
-            }
-        }
+  // ─── ORBS ───
+  const orbs = Array.from({length: 6}, (_, i) => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 180 + Math.random() * 200,
+    vx: (Math.random() - 0.5) * 0.12,
+    vy: (Math.random() - 0.5) * 0.10,
+    hue: i < 3 ? 'blue' : 'amber',
+    alpha: 0.06 + Math.random() * 0.06,
+    phase: Math.random() * Math.PI * 2
+  }));
 
-        // Initialize background effects on load
-        window.addEventListener('DOMContentLoaded', createParticles);
-    </script>
+  function drawOrbs(t) {
+    orbs.forEach(o => {
+      o.x += o.vx;
+      o.y += o.vy;
+      if (o.x < -o.r)      o.x = W + o.r;
+      if (o.x > W + o.r)   o.x = -o.r;
+      if (o.y < -o.r)      o.y = H + o.r;
+      if (o.y > H + o.r)   o.y = -o.r;
+
+      const pulse = 1 + 0.06 * Math.sin(t * 0.0004 + o.phase);
+      const r = o.r * pulse;
+      const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, r);
+
+      if (o.hue === 'blue') {
+        grad.addColorStop(0,   `rgba(70, 90, 200, ${o.alpha})`);
+        grad.addColorStop(0.5, `rgba(50, 60, 160, ${o.alpha * 0.5})`);
+        grad.addColorStop(1,   `rgba(30, 40, 120, 0)`);
+      } else {
+        grad.addColorStop(0,   `rgba(255, 170, 50, ${o.alpha * 0.7})`);
+        grad.addColorStop(0.5, `rgba(220, 130, 30, ${o.alpha * 0.3})`);
+        grad.addColorStop(1,   `rgba(180, 100, 20, 0)`);
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(o.x - r, o.y - r, r*2, r*2);
+    });
+  }
+
+  // ─── PARTICLES ───
+  const particles = Array.from({length: 90}, () => ({
+    x: Math.random() * 1,  // stored as 0-1 fraction
+    y: Math.random() * 1,
+    size: 0.5 + Math.random() * 1.5,
+    vy: -(0.008 + Math.random() * 0.02),
+    alpha: 0.1 + Math.random() * 0.35,
+    twinkle: Math.random() * Math.PI * 2,
+    twinkleSpeed: 0.002 + Math.random() * 0.004
+  }));
+
+  function drawParticles(t) {
+    particles.forEach(p => {
+      p.y += p.vy * 0.016;
+      p.twinkle += p.twinkleSpeed;
+      if (p.y < 0) { p.y = 1; p.x = Math.random(); }
+
+      const a = p.alpha * (0.5 + 0.5 * Math.sin(p.twinkle));
+      ctx.beginPath();
+      ctx.arc(p.x * W, p.y * H, p.size, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(220, 210, 255, ${a})`;
+      ctx.fill();
+    });
+  }
+
+  // ─── LOOP ───
+  function loop(t) {
+    ctx.clearRect(0, 0, W, H);
+    drawGradient();
+    drawOrbs(t);
+    drawParticles(t);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+
+// ─── INIT ────────────────────────────────────────────────────────
+buildScenes();
+showScene(0);
+</script>
 </body>
 </html>
