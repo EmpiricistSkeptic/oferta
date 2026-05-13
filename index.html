@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Para Ti</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #050816;
+      --text: rgba(255,255,255,0.93);
+      --muted: rgba(255,255,255,0.58);
+      --border: rgba(255,255,255,0.08);
+    }
+
+    body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #11172f 0%, #050816 55%, #02040c 100%);
+      color: white;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+    }
+
+    /* ===========================
+       Magical Background
+    ============================ */
+
+    .background {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: -10;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.22;
+      animation: float 18s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    .orb.one {
+      width: 500px;
+      height: 500px;
+      background: #5f7cff;
+      top: -120px;
+      left: -120px;
+    }
+
+    .orb.two {
+      width: 420px;
+      height: 420px;
+      background: #9b6dff;
+      bottom: -120px;
+      right: -120px;
+      animation-delay: 4s;
+    }
+
+    .orb.three {
+      width: 280px;
+      height: 280px;
+      background: #ffc47d;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.12;
+      animation-delay: 2s;
+    }
+
+    @keyframes float {
+      0%,100% {
+        transform: translateY(0px) translateX(0px);
+      }
+
+      50% {
+        transform: translateY(-30px) translateX(15px);
+      }
+    }
+
+    /* ===========================
+       Candle Lights
+    ============================ */
+
+    .candle {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,194,102,0.55) 0%, rgba(255,194,102,0.08) 45%, transparent 75%);
+      filter: blur(25px);
+      animation: flicker 4s ease-in-out infinite;
+    }
+
+    .c1 {
+      left: 8%;
+      bottom: 12%;
+    }
+
+    .c2 {
+      right: 10%;
+      top: 15%;
+      animation-delay: 1.2s;
+    }
+
+    .c3 {
+      left: 50%;
+      bottom: 5%;
+      transform: translateX(-50%);
+      animation-delay: 2.3s;
+    }
+
+    @keyframes flicker {
+      0%,100% {
+        opacity: 0.55;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.75;
+        transform: scale(1.06);
+      }
+    }
+
+    /* ===========================
+       Stars / particles
+    ============================ */
+
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 50%;
+      animation: rise linear infinite;
+    }
+
+    @keyframes rise {
+      from {
+        transform: translateY(0px);
+        opacity: 0;
+      }
+
+      20% {
+        opacity: 1;
+      }
+
+      to {
+        transform: translateY(-120vh);
+        opacity: 0;
+      }
+    }
+
+    /* ===========================
+       Vignette
+    ============================ */
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle, transparent 35%, rgba(0,0,0,0.55) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* ===========================
+       Container
+    ============================ */
+
+    .container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .scene {
+      position: absolute;
+      width: 100%;
+      max-width: 900px;
+      opacity: 0;
+      transform: translateY(20px) scale(0.99);
+      pointer-events: none;
+      transition:
+        opacity 1.6s ease,
+        transform 1.6s ease;
+    }
+
+    .scene.active {
+      opacity: 1;
+      transform: translateY(0px) scale(1);
+      pointer-events: auto;
+    }
+
+    .content {
+      position: relative;
+      padding: 80px 70px;
+      border-radius: 34px;
+      overflow: hidden;
+
+      background: rgba(255,255,255,0.04);
+
+      border: 1px solid rgba(255,255,255,0.08);
+
+      backdrop-filter: blur(20px);
+
+      box-shadow:
+        0 0 80px rgba(111,130,255,0.08),
+        0 0 140px rgba(255,190,110,0.04),
+        inset 0 0 40px rgba(255,255,255,0.02);
+    }
+
+    .content::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg,
+        transparent 0%,
+        rgba(255,255,255,0.04) 50%,
+        transparent 100%);
+
+      animation: shimmer 8s linear infinite;
+    }
+
+    @keyframes shimmer {
+      from {
+        transform: translateX(-100%);
+      }
+
+      to {
+        transform: translateX(100%);
+      }
+    }
+
+    .text {
+      position: relative;
+      z-index: 3;
+
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      line-height: 1.45;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      font-weight: 400;
+
+      text-shadow:
+        0 0 18px rgba(255,255,255,0.03),
+        0 0 35px rgba(255,190,120,0.04);
+    }
+
+    .small {
+      font-size: clamp(1.8rem, 2.6vw, 2.7rem);
+    }
+
+    .fade-line {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: reveal 1.6s forwards;
+    }
+
+    .fade-line:nth-child(2) {
+      animation-delay: 0.7s;
+    }
+
+    .fade-line:nth-child(3) {
+      animation-delay: 1.4s;
+    }
+
+    .fade-line:nth-child(4) {
+      animation-delay: 2.1s;
+    }
+
+    @keyframes reveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .button-wrapper {
+      margin-top: 55px;
+      display: flex;
+      justify-content: center;
+      position: relative;
+      z-index: 4;
+    }
+
+    button {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: white;
+
+      padding: 16px 34px;
+
+      border-radius: 999px;
+
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+
+      cursor: pointer;
+
+      backdrop-filter: blur(10px);
+
+      transition:
+        transform 0.4s ease,
+        background 0.4s ease,
+        box-shadow 0.4s ease,
+        border 0.4s ease;
+    }
+
+    button:hover {
+      transform: translateY(-3px) scale(1.02);
+
+      background: rgba(255,255,255,0.12);
+
+      border: 1px solid rgba(255,255,255,0.2);
+
+      box-shadow:
+        0 0 30px rgba(255,255,255,0.06),
+        0 0 60px rgba(255,190,120,0.08);
+    }
+
+    .final {
+      text-align: center;
+    }
+
+    .hint {
+      margin-top: 28px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 768px) {
+
+      .content {
+        padding: 55px 32px;
+      }
+
+      .text {
+        line-height: 1.52;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="background">
+
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="candle c1"></div>
+    <div class="candle c2"></div>
+    <div class="candle c3"></div>
+
+    <div class="particles" id="particles"></div>
+
+  </div>
+
+  <div class="vignette"></div>
+
+  <div class="container">
+
+    <section class="scene active">
+      <div class="content">
+
+        <div class="text small">
+
+          <div class="fade-line">
+            Hay momentos en la vida en los que las palabras en un chat se quedan cortas.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Hoy sentí que era el momento de detenerme y decirte las cosas como realmente son...
+          </div>
+
+        </div>
+
+        <div class="button-wrapper">
+          <button onclick="nextScene()">Continuar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="scene">
+      <div class="content">
+
+        <div class="text">
+
+          <div class="fade-line">
+            Cuando te miro, no solo veo a una mujer increíblemente hermosa.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Veo tu timidez, esa que intentas ocultar a veces,
+            pero que para mí es el reflejo de la nobleza de tu alma.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Veo la pureza en tus ojos,
+            esa luz que parece intacta a pesar de todo.
+          </div>
+
+        </div>
+
+        <div class="button-wrapper">
+          <button onclick="nextScene()">Continuar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="scene">
+      <div class="content">
+
+        <div class="text">
+
+          <div class="fade-line">
+            Adoro cómo te ríes cuando te da vergüenza
+            y cómo, poco a poco,
+            has dejado que yo vea quién eres de verdad.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Tienes una elegancia natural que nace de tu bondad,
+            y eso es lo que más admiro de ti.
+          </div>
+
+        </div>
+
+        <div class="button-wrapper">
+          <button onclick="nextScene()">Continuar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="scene">
+      <div class="content">
+
+        <div class="text">
+
+          <div class="fade-line">
+            Sé que a veces te exiges demasiado,
+            que temes no ser perfecta
+            o que tus cicatrices del pasado puedan asustarme.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Pero escucha bien:
+            tus heridas no me alejan.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Me hacen respetarte aún más
+            por la fuerza que tienes.
+          </div>
+
+        </div>
+
+        <div class="button-wrapper">
+          <button onclick="nextScene()">Continuar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="scene">
+      <div class="content">
+
+        <div class="text">
+
+          <div class="fade-line">
+            No necesitas ser perfecta para ser valorada;
+            para mí, ya eres suficiente.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Quiero ser el hombre que te dé la paz
+            y la seguridad que siempre mereciste.
+          </div>
+
+        </div>
+
+        <div class="button-wrapper">
+          <button onclick="nextScene()">Continuar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="scene">
+      <div class="content">
+
+        <div class="text">
+
+          <div class="fade-line">
+            Hoy hablamos de cosas profundas,
+            de sueños que quizás antes veías lejanos.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Escuchar eso de ti me hizo entender
+            que somos más que dos personas que se gustan.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Somos un equipo.
+          </div>
+
+        </div>
+
+        <div class="button-wrapper">
+          <button onclick="nextScene()">Continuar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="scene">
+      <div class="content">
+
+        <div class="text">
+
+          <div class="fade-line">
+            Quiero que seas mi mejor amiga,
+            mi cómplice en todo lo que venga.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            La persona con la que pueda compartir
+            mis metas y también mis miedos.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Juntos podemos construir algo
+            que nadie pueda romper.
+          </div>
+
+        </div>
+
+        <div class="button-wrapper">
+          <button onclick="nextScene()">Continuar</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="scene">
+      <div class="content final">
+
+        <div class="text">
+
+          <div class="fade-line">
+            Te amo con una fuerza
+            que me motiva a ser mejor cada día.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            No quiero que esto sea solo una etapa.
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Quiero que sea nuestra historia.
+          </div>
+
+          <br><br>
+
+          <div class="fade-line">
+            Hay algo más que quiero decirte...
+          </div>
+
+          <br>
+
+          <div class="fade-line">
+            Pero prefiero hacerlo escuchando tu voz.
+          </div>
+
+        </div>
+
+        <div class="button-wrapper">
+          <button onclick="window.location.href='https://t.me/YOUR_USERNAME'">
+            Llámame ❤️
+          </button>
+        </div>
+
+        <div class="hint">
+          para ti, con todo mi corazón
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+
+    // ===========================
+    // Scene transitions
+    // ===========================
+
+    const scenes = document.querySelectorAll('.scene');
+    let current = 0;
+
+    function nextScene() {
+      scenes[current].classList.remove('active');
+
+      current++;
+
+      if (current < scenes.length) {
+
+        setTimeout(() => {
+
+          scenes[current].classList.add('active');
+
+          const lines = scenes[current].querySelectorAll('.fade-line');
+
+          lines.forEach(line => {
+            line.style.animation = 'none';
+            line.offsetHeight;
+            line.style.animation = '';
+          });
+
+        }, 600);
+      }
+    }
+
+    // ===========================
+    // Floating particles
+    // ===========================
+
+    const particlesContainer = document.getElementById('particles');
+
+    for (let i = 0; i < 55; i++) {
+
+      const particle = document.createElement('div');
+
+      particle.classList.add('particle');
+
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.top = Math.random() * 100 + 'vh';
+
+      particle.style.opacity = Math.random();
+
+      const size = Math.random() * 3 + 1;
+
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+
+      particle.style.animationDuration = (Math.random() * 18 + 12) + 's';
+      particle.style.animationDelay = Math.random() * 10 + 's';
+
+      particlesContainer.appendChild(particle);
+    }
+
+  </script>
+
+</body>
+</html>
+```
+
+A few details I especially recommend:
+
+* Replace `YOUR_USERNAME` with your Telegram username.
+* Deploy it exactly as `index.html` to GitHub Pages.
+* Open it on mobile too — this design should feel especially intimate there.
+* Read through every transition yourself once before sending it.
+
+The atmosphere now should feel much closer to:
+
+* cinematic,
+* warm,
+* magical,
+* intimate,
+* dreamlike.
+
+Instead of just “text on a dark screen.”
