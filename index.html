@@ -1,740 +1,439 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Para Ti</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-
-  <style>
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --bg: #050816;
-      --text: rgba(255,255,255,0.93);
-      --muted: rgba(255,255,255,0.58);
-      --border: rgba(255,255,255,0.08);
-    }
-
-    body {
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      background: radial-gradient(circle at top, #11172f 0%, #050816 55%, #02040c 100%);
-      color: white;
-      font-family: 'Inter', sans-serif;
-      position: relative;
-    }
-
-    /* ===========================
-       Magical Background
-    ============================ */
-
-    .background {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      z-index: -10;
-    }
-
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.22;
-      animation: float 18s ease-in-out infinite;
-      mix-blend-mode: screen;
-    }
-
-    .orb.one {
-      width: 500px;
-      height: 500px;
-      background: #5f7cff;
-      top: -120px;
-      left: -120px;
-    }
-
-    .orb.two {
-      width: 420px;
-      height: 420px;
-      background: #9b6dff;
-      bottom: -120px;
-      right: -120px;
-      animation-delay: 4s;
-    }
-
-    .orb.three {
-      width: 280px;
-      height: 280px;
-      background: #ffc47d;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.12;
-      animation-delay: 2s;
-    }
-
-    @keyframes float {
-      0%,100% {
-        transform: translateY(0px) translateX(0px);
-      }
-
-      50% {
-        transform: translateY(-30px) translateX(15px);
-      }
-    }
-
-    /* ===========================
-       Candle Lights
-    ============================ */
-
-    .candle {
-      position: absolute;
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,194,102,0.55) 0%, rgba(255,194,102,0.08) 45%, transparent 75%);
-      filter: blur(25px);
-      animation: flicker 4s ease-in-out infinite;
-    }
-
-    .c1 {
-      left: 8%;
-      bottom: 12%;
-    }
-
-    .c2 {
-      right: 10%;
-      top: 15%;
-      animation-delay: 1.2s;
-    }
-
-    .c3 {
-      left: 50%;
-      bottom: 5%;
-      transform: translateX(-50%);
-      animation-delay: 2.3s;
-    }
-
-    @keyframes flicker {
-      0%,100% {
-        opacity: 0.55;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: 0.75;
-        transform: scale(1.06);
-      }
-    }
-
-    /* ===========================
-       Stars / particles
-    ============================ */
-
-    .particles {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
-
-    .particle {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: rgba(255,255,255,0.5);
-      border-radius: 50%;
-      animation: rise linear infinite;
-    }
-
-    @keyframes rise {
-      from {
-        transform: translateY(0px);
-        opacity: 0;
-      }
-
-      20% {
-        opacity: 1;
-      }
-
-      to {
-        transform: translateY(-120vh);
-        opacity: 0;
-      }
-    }
-
-    /* ===========================
-       Vignette
-    ============================ */
-
-    .vignette {
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle, transparent 35%, rgba(0,0,0,0.55) 100%);
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* ===========================
-       Container
-    ============================ */
-
-    .container {
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      position: relative;
-      z-index: 5;
-    }
-
-    .scene {
-      position: absolute;
-      width: 100%;
-      max-width: 900px;
-      opacity: 0;
-      transform: translateY(20px) scale(0.99);
-      pointer-events: none;
-      transition:
-        opacity 1.6s ease,
-        transform 1.6s ease;
-    }
-
-    .scene.active {
-      opacity: 1;
-      transform: translateY(0px) scale(1);
-      pointer-events: auto;
-    }
-
-    .content {
-      position: relative;
-      padding: 80px 70px;
-      border-radius: 34px;
-      overflow: hidden;
-
-      background: rgba(255,255,255,0.04);
-
-      border: 1px solid rgba(255,255,255,0.08);
-
-      backdrop-filter: blur(20px);
-
-      box-shadow:
-        0 0 80px rgba(111,130,255,0.08),
-        0 0 140px rgba(255,190,110,0.04),
-        inset 0 0 40px rgba(255,255,255,0.02);
-    }
-
-    .content::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(120deg,
-        transparent 0%,
-        rgba(255,255,255,0.04) 50%,
-        transparent 100%);
-
-      animation: shimmer 8s linear infinite;
-    }
-
-    @keyframes shimmer {
-      from {
-        transform: translateX(-100%);
-      }
-
-      to {
-        transform: translateX(100%);
-      }
-    }
-
-    .text {
-      position: relative;
-      z-index: 3;
-
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 3vw, 3.2rem);
-      line-height: 1.45;
-      letter-spacing: 0.02em;
-      color: var(--text);
-      font-weight: 400;
-
-      text-shadow:
-        0 0 18px rgba(255,255,255,0.03),
-        0 0 35px rgba(255,190,120,0.04);
-    }
-
-    .small {
-      font-size: clamp(1.8rem, 2.6vw, 2.7rem);
-    }
-
-    .fade-line {
-      opacity: 0;
-      transform: translateY(16px);
-      animation: reveal 1.6s forwards;
-    }
-
-    .fade-line:nth-child(2) {
-      animation-delay: 0.7s;
-    }
-
-    .fade-line:nth-child(3) {
-      animation-delay: 1.4s;
-    }
-
-    .fade-line:nth-child(4) {
-      animation-delay: 2.1s;
-    }
-
-    @keyframes reveal {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .button-wrapper {
-      margin-top: 55px;
-      display: flex;
-      justify-content: center;
-      position: relative;
-      z-index: 4;
-    }
-
-    button {
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      color: white;
-
-      padding: 16px 34px;
-
-      border-radius: 999px;
-
-      font-size: 0.9rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-weight: 500;
-
-      cursor: pointer;
-
-      backdrop-filter: blur(10px);
-
-      transition:
-        transform 0.4s ease,
-        background 0.4s ease,
-        box-shadow 0.4s ease,
-        border 0.4s ease;
-    }
-
-    button:hover {
-      transform: translateY(-3px) scale(1.02);
-
-      background: rgba(255,255,255,0.12);
-
-      border: 1px solid rgba(255,255,255,0.2);
-
-      box-shadow:
-        0 0 30px rgba(255,255,255,0.06),
-        0 0 60px rgba(255,190,120,0.08);
-    }
-
-    .final {
-      text-align: center;
-    }
-
-    .hint {
-      margin-top: 28px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 0.92rem;
-      letter-spacing: 0.04em;
-    }
-
-    @media (max-width: 768px) {
-
-      .content {
-        padding: 55px 32px;
-      }
-
-      .text {
-        line-height: 1.52;
-      }
-
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Ti</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+    <style>
+        /* === 1. Base Setup & Variables === */
+        :root {
+            --bg-color: #050508;
+            --text-primary: #fdf8f5;
+            --text-secondary: rgba(253, 248, 245, 0.7);
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Inter', sans-serif;
+            --glow-blue: rgba(45, 33, 102, 0.6);
+            --glow-amber: rgba(180, 100, 30, 0.2);
+            --card-bg: rgba(15, 15, 20, 0.4);
+            --card-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-serif);
+            overflow: hidden; /* Prevent scrolling, true single page */
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* === 2. Background Layers (Cinematic Ambient) === */
+        #ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .gradient-base {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #0a0a14 0%, #030305 100%);
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            animation: floatOrb 25s infinite alternate ease-in-out;
+        }
+        .orb-1 {
+            width: 40vw;
+            height: 40vw;
+            background: var(--glow-blue);
+            top: -10%;
+            left: -10%;
+            animation-duration: 30s;
+        }
+        .orb-2 {
+            width: 35vw;
+            height: 35vw;
+            background: rgba(70, 30, 100, 0.4);
+            bottom: -10%;
+            right: -10%;
+            animation-duration: 28s;
+            animation-delay: -5s;
+        }
+        .orb-3 {
+            width: 30vw;
+            height: 30vw;
+            background: var(--glow-amber);
+            top: 40%;
+            left: 40%;
+            animation-duration: 35s;
+            animation-delay: -10s;
+        }
+
+        /* Particles */
+        .particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: rise 15s infinite linear;
+        }
+
+        /* Warm Glow (Candle effect) */
+        .warm-glow {
+            position: absolute;
+            width: 20vw;
+            height: 100vh;
+            top: 0;
+            filter: blur(120px);
+            opacity: 0.3;
+            animation: pulseGlow 8s infinite alternate ease-in-out;
+        }
+        .warm-glow.left { left: -10vw; background: radial-gradient(ellipse, rgba(200, 120, 40, 0.4) 0%, transparent 70%); }
+        .warm-glow.right { right: -10vw; background: radial-gradient(ellipse, rgba(200, 120, 40, 0.4) 0%, transparent 70%); animation-delay: -4s;}
+
+        /* Vignette */
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.9);
+            pointer-events: none;
+        }
+
+        /* === 3. UI Element: Glass Card === */
+        main {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .scene {
+            position: absolute;
+            display: none; /* Handled by JS */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .scene.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .glass-card {
+            width: 100%;
+            max-width: 700px;
+            min-height: 70vh;
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 32px;
+            padding: 80px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            
+            /* Gradient glowing border simulation */
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.5),
+                0 0 40px rgba(100, 80, 200, 0.1) outer,
+                inset 0 0 20px rgba(255, 200, 100, 0.05);
+            
+            border: 1px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            z-index: -1;
+            margin: -1px;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.05) 100%);
+        }
+
+        /* Micro-zoom transition for cards */
+        .scene.active .glass-card {
+            animation: microZoom 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        /* === 4. Typography & Content === */
+        p {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(15px);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Line by line reveal */
+        .scene.active p {
+            animation: textReveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        
+        /* Delays for multiple paragraphs */
+        .scene.active p:nth-child(1) { animation-delay: 0.3s; }
+        .scene.active p:nth-child(2) { animation-delay: 1.5s; }
+        .scene.active p:nth-child(3) { animation-delay: 2.7s; }
+
+        /* === 5. Buttons === */
+        button, .final-cta {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 14px 32px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            opacity: 0;
+            margin-top: auto;
+        }
+
+        .scene.active button, .scene.active .final-cta {
+            animation: textReveal 1s ease forwards;
+            animation-delay: 2s; /* Appears after text */
+        }
+
+        /* Slower reveal for final scene */
+        #scene-6.active p { animation-duration: 2s; animation-delay: 0.5s;}
+        #scene-6.active .final-cta { animation-delay: 3.5s; border-color: rgba(255, 255, 255, 0.4); color: var(--text-primary); }
+
+        button:hover, .final-cta:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Reset link styling for CTA */
+        a.final-cta {
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* === 6. Animations === */
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 5%) scale(1.1); }
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.2; }
+            100% { opacity: 0.4; }
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        @keyframes textReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes microZoom {
+            from { transform: scale(0.96); }
+            to { transform: scale(1); }
+        }
+
+        /* === 7. Mobile Adjustments === */
+        @media (max-width: 768px) {
+            .glass-card {
+                padding: 50px 30px;
+                min-height: 75vh;
+            }
+            p { font-size: 1.3rem; }
+        }
+    </style>
 </head>
-
 <body>
 
-  <div class="background">
+    <!-- Cinematic Background -->
+    <div id="ambient-bg">
+        <div class="gradient-base"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div id="particles-container"></div>
+        <div class="warm-glow left"></div>
+        <div class="warm-glow right"></div>
+        <div class="vignette"></div>
+    </div>
 
-    <div class="orb one"></div>
-    <div class="orb two"></div>
-    <div class="orb three"></div>
-
-    <div class="candle c1"></div>
-    <div class="candle c2"></div>
-    <div class="candle c3"></div>
-
-    <div class="particles" id="particles"></div>
-
-  </div>
-
-  <div class="vignette"></div>
-
-  <div class="container">
-
-    <section class="scene active">
-      <div class="content">
-
-        <div class="text small">
-
-          <div class="fade-line">
-            Hay momentos en la vida en los que las palabras en un chat se quedan cortas.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Hoy sentí que era el momento de detenerme y decirte las cosas como realmente son...
-          </div>
-
+    <!-- Scenes Container -->
+    <main>
+        <!-- Scene 1 -->
+        <div class="scene active" id="scene-1">
+            <div class="glass-card">
+                <p>Hay momentos en la vida en los que las palabras en un chat se quedan cortas.</p>
+                <p>Hoy sentí que era el momento de detenerme y decirte las cosas como realmente son, sin prisas, en un espacio dedicado solo para ti.</p>
+                <p>No es solo un mensaje, es mi forma de mostrarte que lo que siento tiene un lugar sólido en mi mundo.</p>
+                <button onclick="nextScene(2)">Continuar</button>
+            </div>
         </div>
 
-        <div class="button-wrapper">
-          <button onclick="nextScene()">Continuar</button>
+        <!-- Scene 2 -->
+        <div class="scene" id="scene-2">
+            <div class="glass-card">
+                <p>Cuando te miro, no solo veo a una mujer increíblemente hermosa.</p>
+                <p>Veo tu timidez, esa que intentas ocultar a veces, pero que para mí es el reflejo de la nobleza de tu alma.</p>
+                <p>Veo la pureza en tus ojos, esa luz que parece intacta a pesar de todo. Adoro cómo te ríes cuando te da vergüenza y cómo, poco a poco, has dejado que yo vea quién eres de verdad.</p>
+                <button onclick="nextScene(3)">Continuar</button>
+            </div>
         </div>
 
-      </div>
-    </section>
-
-    <section class="scene">
-      <div class="content">
-
-        <div class="text">
-
-          <div class="fade-line">
-            Cuando te miro, no solo veo a una mujer increíblemente hermosa.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Veo tu timidez, esa que intentas ocultar a veces,
-            pero que para mí es el reflejo de la nobleza de tu alma.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Veo la pureza en tus ojos,
-            esa luz que parece intacta a pesar de todo.
-          </div>
-
+        <!-- Scene 3 -->
+        <div class="scene" id="scene-3">
+            <div class="glass-card">
+                <p>Tienes una elegancia natural que nace de tu bondad, y eso es lo que más admiro de ti.</p>
+                <p>Sé que a veces te exiges demasiado, que temes no ser "perfecta" o que tus cicatrices del pasado puedan asustarme.</p>
+                <p>Pero escucha bien: tus heridas no me alejan, me hacen respetarte más por la fuerza que tienes. No necesitas ser perfecta para ser valorada; para mí, ya eres suficiente.</p>
+                <button onclick="nextScene(4)">Continuar</button>
+            </div>
         </div>
 
-        <div class="button-wrapper">
-          <button onclick="nextScene()">Continuar</button>
+        <!-- Scene 4 -->
+        <div class="scene" id="scene-4">
+            <div class="glass-card">
+                <p>Quiero ser el hombre que te dé la paz y la seguridad que siempre mereciste.</p>
+                <p>El lugar donde puedas bajar la guardia y, simplemente, ser tú misma.</p>
+                <button onclick="nextScene(5)">Continuar</button>
+            </div>
         </div>
 
-      </div>
-    </section>
-
-    <section class="scene">
-      <div class="content">
-
-        <div class="text">
-
-          <div class="fade-line">
-            Adoro cómo te ríes cuando te da vergüenza
-            y cómo, poco a poco,
-            has dejado que yo vea quién eres de verdad.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Tienes una elegancia natural que nace de tu bondad,
-            y eso es lo que más admiro de ti.
-          </div>
-
+        <!-- Scene 5 -->
+        <div class="scene" id="scene-5">
+            <div class="glass-card">
+                <p>Hoy hablamos de cosas profundas, de sueños que quizás antes veías lejanos, como la idea de tener una familia.</p>
+                <p>Escuchar eso de ti me hizo entender que somos más que dos personas que se gustan; somos un equipo.</p>
+                <p>Quiero que seas mi mejor amiga, mi cómplice en todo lo que venga. Juntos podemos construir algo que nadie pueda romper.</p>
+                <button onclick="nextScene(6)">Continuar</button>
+            </div>
         </div>
 
-        <div class="button-wrapper">
-          <button onclick="nextScene()">Continuar</button>
+        <!-- Scene 6 (Final) -->
+        <div class="scene" id="scene-6">
+            <div class="glass-card">
+                <p>Te amo con una fuerza que me motiva a ser mejor cada día.</p>
+                <p>No quiero que esto sea solo una etapa, quiero que sea nuestra historia.</p>
+                <p>Hay algo más que quiero decirte, pero prefiero hacerlo escuchando tu voz...</p>
+                
+                <!-- Action CTA: triggers a phone call intent -->
+                <a href="tel:+1234567890" class="final-cta">Quiero escuchar tu voz</a>
+            </div>
         </div>
-
-      </div>
-    </section>
-
-    <section class="scene">
-      <div class="content">
-
-        <div class="text">
-
-          <div class="fade-line">
-            Sé que a veces te exiges demasiado,
-            que temes no ser perfecta
-            o que tus cicatrices del pasado puedan asustarme.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Pero escucha bien:
-            tus heridas no me alejan.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Me hacen respetarte aún más
-            por la fuerza que tienes.
-          </div>
-
-        </div>
-
-        <div class="button-wrapper">
-          <button onclick="nextScene()">Continuar</button>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="scene">
-      <div class="content">
-
-        <div class="text">
-
-          <div class="fade-line">
-            No necesitas ser perfecta para ser valorada;
-            para mí, ya eres suficiente.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Quiero ser el hombre que te dé la paz
-            y la seguridad que siempre mereciste.
-          </div>
-
-        </div>
-
-        <div class="button-wrapper">
-          <button onclick="nextScene()">Continuar</button>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="scene">
-      <div class="content">
-
-        <div class="text">
-
-          <div class="fade-line">
-            Hoy hablamos de cosas profundas,
-            de sueños que quizás antes veías lejanos.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Escuchar eso de ti me hizo entender
-            que somos más que dos personas que se gustan.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Somos un equipo.
-          </div>
-
-        </div>
-
-        <div class="button-wrapper">
-          <button onclick="nextScene()">Continuar</button>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="scene">
-      <div class="content">
-
-        <div class="text">
-
-          <div class="fade-line">
-            Quiero que seas mi mejor amiga,
-            mi cómplice en todo lo que venga.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            La persona con la que pueda compartir
-            mis metas y también mis miedos.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Juntos podemos construir algo
-            que nadie pueda romper.
-          </div>
-
-        </div>
-
-        <div class="button-wrapper">
-          <button onclick="nextScene()">Continuar</button>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="scene">
-      <div class="content final">
-
-        <div class="text">
-
-          <div class="fade-line">
-            Te amo con una fuerza
-            que me motiva a ser mejor cada día.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            No quiero que esto sea solo una etapa.
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Quiero que sea nuestra historia.
-          </div>
-
-          <br><br>
-
-          <div class="fade-line">
-            Hay algo más que quiero decirte...
-          </div>
-
-          <br>
-
-          <div class="fade-line">
-            Pero prefiero hacerlo escuchando tu voz.
-          </div>
-
-        </div>
-
-        <div class="button-wrapper">
-          <button onclick="window.location.href='https://t.me/YOUR_USERNAME'">
-            Llámame ❤️
-          </button>
-        </div>
-
-        <div class="hint">
-          para ti, con todo mi corazón
-        </div>
-
-      </div>
-    </section>
-
-  </div>
-
-  <script>
-
-    // ===========================
-    // Scene transitions
-    // ===========================
-
-    const scenes = document.querySelectorAll('.scene');
-    let current = 0;
-
-    function nextScene() {
-      scenes[current].classList.remove('active');
-
-      current++;
-
-      if (current < scenes.length) {
-
-        setTimeout(() => {
-
-          scenes[current].classList.add('active');
-
-          const lines = scenes[current].querySelectorAll('.fade-line');
-
-          lines.forEach(line => {
-            line.style.animation = 'none';
-            line.offsetHeight;
-            line.style.animation = '';
-          });
-
-        }, 600);
-      }
-    }
-
-    // ===========================
-    // Floating particles
-    // ===========================
-
-    const particlesContainer = document.getElementById('particles');
-
-    for (let i = 0; i < 55; i++) {
-
-      const particle = document.createElement('div');
-
-      particle.classList.add('particle');
-
-      particle.style.left = Math.random() * 100 + 'vw';
-      particle.style.top = Math.random() * 100 + 'vh';
-
-      particle.style.opacity = Math.random();
-
-      const size = Math.random() * 3 + 1;
-
-      particle.style.width = size + 'px';
-      particle.style.height = size + 'px';
-
-      particle.style.animationDuration = (Math.random() * 18 + 12) + 's';
-      particle.style.animationDelay = Math.random() * 10 + 's';
-
-      particlesContainer.appendChild(particle);
-    }
-
-  </script>
-
+    </main>
+
+    <script>
+        // === Scene Transition Logic ===
+        function nextScene(nextIndex) {
+            const currentScene = document.querySelector('.scene.active');
+            const nextSceneElement = document.getElementById(`scene-${nextIndex}`);
+
+            if (!currentScene || !nextSceneElement) return;
+
+            // Fade out current
+            currentScene.style.opacity = '0';
+            
+            setTimeout(() => {
+                currentScene.classList.remove('active');
+                currentScene.style.display = 'none';
+
+                // Prepare next scene
+                nextSceneElement.style.display = 'flex';
+                
+                // Trigger reflow to restart CSS animations
+                void nextSceneElement.offsetWidth; 
+
+                // Fade in next
+                nextSceneElement.classList.add('active');
+            }, 800); // Wait for CSS transition (0.8s) to finish
+        }
+
+        // === Ambient Particles Generator ===
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 40;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Randomize properties for organic feel
+                const size = Math.random() * 3 + 1; // 1px to 4px
+                const posX = Math.random() * 100; // 0% to 100% vw
+                const delay = Math.random() * 15; // 0s to 15s delay
+                const duration = Math.random() * 10 + 15; // 15s to 25s duration
+                const opacity = Math.random() * 0.5 + 0.1; // 0.1 to 0.6 max opacity
+
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}vw`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.opacity = opacity;
+
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize background effects on load
+        window.addEventListener('DOMContentLoaded', createParticles);
+    </script>
 </body>
 </html>
-```
-
-A few details I especially recommend:
-
-* Replace `YOUR_USERNAME` with your Telegram username.
-* Deploy it exactly as `index.html` to GitHub Pages.
-* Open it on mobile too — this design should feel especially intimate there.
-* Read through every transition yourself once before sending it.
-
-The atmosphere now should feel much closer to:
-
-* cinematic,
-* warm,
-* magical,
-* intimate,
-* dreamlike.
-
-Instead of just “text on a dark screen.”
